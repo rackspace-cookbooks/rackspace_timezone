@@ -17,33 +17,9 @@ end
 
 case node['platform_family']
 when 'debian'
-  template '/etc/timezone' do
-    cookbook node['rackspace_timezone']['templates_cookbook']['timezone.conf']
-    source 'timezone.conf.erb'
-    owner 'root'
-    group 'root'
-    mode 0644
-    notifies :run, 'bash[dpkg-reconfigure tzdata]'
-  end
-
-  bash 'dpkg-reconfigure tzdata' do
-    user 'root'
-    code '/usr/sbin/dpkg-reconfigure -f noninteractive tzdata'
-    action :nothing
-  end
+  include_recipe "rackspace_timezone::debian"
 when 'rhel'
-  template '/etc/sysconfig/clock' do
-    cookbook node['rackspace_timezone']['templates_cookbook']['clock']
-    source 'clock.erb'
-    owner 'root'
-    group 'root'
-    mode 0644
-    notifies :run, 'bash[tzdata-update]'
-  end
-
-  bash 'tzdata-update' do
-    user 'root'
-    code '/usr/sbin/tzdata-update'
-    action :nothing
-  end
+  include_recipe "rackspace_timezone::rhel"
+when 'redora'
+  include_recipe "rackspace_timezone::fedora"
 end
